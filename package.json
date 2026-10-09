@@ -1,0 +1,21 @@
+{
+    "name": "ahgs-nova-next",
+    "private": true,
+    "version": "3.0.0",
+    "type": "module",
+    "description": "AHGS NOVA 前端 · Next 版（Vue 3 + vue-router + pinia，兼容层 + Nova v2 全量）",
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build",
+        "preview": "vite preview"
+    },
+    "dependencies": {
+        "pinia": "^2.2.6",
+        "vue": "^3.5.13",
+        "vue-router": "^4.5.0"
+    },
+    "devDependencies": {
+        "@vitejs/plugin-vue": "^5.2.1",
+        "vite": "^6.0.7"
+    }
+}

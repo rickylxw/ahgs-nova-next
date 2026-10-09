@@ -1,0 +1,91 @@
+<script setup>
+import { computed } from "vue";
+import { niceTicks, fmtTick } from "./ticks";
+
+const props = defineProps({
+    /** [{ label, value, tip, color }] */
+    items: { type: Array, default: () => [] },
+    width: { type: Number, default: 780 },
+    height: { type: Number, default: 180 },
+    emptyIcon: { type: String, default: "📊" },
+    emptyText: { type: String, default: "暂无数据" },
+});
+
+const pad = { l: 46, r: 12, t: 12, b: 26 };
+const gradId = `barg-${Math.random().toString(36).slice(2, 9)}`;
+
+const hasData = computed(() => props.items.length > 0);
+
+/* 支持负值：坐标范围覆盖 [min, max]，0 为基线（全负时基线在顶部，全正时在底部） */
+const scale = computed(() => {
+    if (!hasData.value) return null;
+    const vals = props.items.map(i => Number(i.value)).filter(isFinite);
+    const vMax = Math.max(...vals, 0);
+    const vMin = Math.min(...vals, 0);
+    const { ticks, lo, hi } = niceTicks(vMin, vMax === vMin ? vMax + 1 : vMax, 3);
+    const plotH = props.height - pad.t - pad.b;
+    const bw = (props.width - pad.l - pad.r) / Math.max(props.items.length, 1);
+    const y = v => pad.t + ((hi - v) / (hi - lo)) * plotH;
+    return { ticks, lo, hi, bw, plotH, y, zeroY: y(0) };
+});
+
+const gridLines = computed(() =>
+    scale.value
+        ? scale.value.ticks.map(t => ({
+            v: t,
+            label: fmtTick(t),
+            y: scale.value.y(t),
+        }))
+        : []
+);
+
+const bars = computed(() => {
+    if (!scale.value) return [];
+    const { bw, plotH, lo, hi, zeroY } = scale.value;
+    return props.items.map((it, i) => {
+        const v = Number(it.value);
+        const full = Math.abs(isFinite(v) ? v : 0) / (hi - lo) * plotH;
+        const positive = v >= 0;
+        const h = Math.max(full, Math.abs(v) > 0 ? 1.5 : 0);
+        const x = pad.l + i * bw + bw * 0.14;
+        const w = bw * 0.72;
+        return {
+            x: x.toFixed(1),
+            y: (positive ? zeroY - h : zeroY).toFixed(1),
+            w: w.toFixed(1),
+            h: h.toFixed(1),
+            fill: it.color || `url(#${gradId})`,
+            opacity: v ? 0.92 : 0.15,
+            tip: (it.tip ?? it.label) + "：" + fmtTick(v) + (String(v) !== fmtTick(v) ? "（完整值 " + String(v) + "）" : ""),
+            showLabel: props.items.length <= 14 || i % Math.ceil(props.items.length / 12) === 0,
+            labelX: (x + w / 2).toFixed(1),
+            label: it.label,
+        };
+    });
+});
+const labeledBars = computed(() => bars.value.map((b, i) => ({ ...b, i })).filter(b => b.showLabel));
+</script>
+
+<template>
+    <div v-if="!hasData" class="empty">
+        <div class="ico">{{ emptyIcon }}</div>{{ emptyText }}
+    </div>
+    <svg v-else :viewBox="`0 0 ${width} ${height}`" style="color: var(--text)">
+        <defs>
+            <linearGradient :id="gradId" x1="0" y1="1" x2="0" y2="0">
+                <stop offset="0" stop-color="#22d3ee" stop-opacity=".55" />
+                <stop offset="1" stop-color="#a78bfa" />
+            </linearGradient>
+        </defs>
+        <template v-for="t in gridLines" :key="'g' + t.v">
+            <line :x1="pad.l" :y1="t.y" :x2="width - pad.r" :y2="t.y" stroke="currentColor" stroke-opacity=".1" />
+            <text class="axis-text" :x="pad.l - 6" :y="t.y + 3.5" text-anchor="end">{{ t.label }}</text>
+        </template>
+        <rect v-for="(b, i) in bars" :key="i" :x="b.x" :y="b.y" :width="b.w" :height="b.h" rx="2.5" :fill="b.fill"
+            :opacity="b.opacity">
+            <title>{{ b.tip }}</title>
+        </rect>
+        <text v-for="b in labeledBars" :key="'t' + b.i" class="axis-text" :x="b.labelX" :y="height - 8"
+            text-anchor="middle">{{ b.label }}</text>
+    </svg>
+</template>
