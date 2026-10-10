@@ -1,0 +1,501 @@
+{
+  "tsp": {
+    "key": "tsp",
+    "description": "TSP问题即，给定一组节点的坐标，您需要找到访问每个节点一次并返回起始点的最短路径。可以通过从当前节点开始逐步选择下一个节点来解决此任务。",
+    "fun_name": "select_next_node",
+    "fun_args": [
+      "current_node",
+      "destination_node",
+      "unvisited_nodes",
+      "distances_from_current"
+    ],
+    "fun_return": [
+      "next_node"
+    ],
+    "fun_notes": "'current_node'是当前节点ID，'unvisited_nodes'是未访问节点ID数组，'destination_node'是终点仓库节点ID（恒为0），'distances_from_current'是当前节点到各节点的距离一行（长度为节点数）。所有数据均为Numpy数组。",
+    "problem_path": "problems/tsp",
+    "train_data": "train_data_tsp.pkl",
+    "train_solution": "train_solution_tsp.pkl",
+    "category": "组合优化类",
+    "default_config": {
+      "population_size": 8,
+      "num_generations": 10
+    }
+  },
+  "knapsack": {
+    "key": "knapsack",
+    "description": "0/1背包问题：给定一组物品，每个物品有重量和价值，在背包容量限制内选择物品使总价值最大。需要通过逐个物品决策来构建解，每个物品选择拿(1)或不拿(0)。",
+    "fun_name": "select_item",
+    "fun_args": [
+      "current_index",
+      "remaining_capacity",
+      "weights",
+      "values",
+      "num_items"
+    ],
+    "fun_return": [
+      "take_item"
+    ],
+    "fun_notes": "'current_index'是当前考虑的物品索引。'remaining_capacity'是背包剩余容量。'weights'和'values'是所有物品的重量和价值数组。'num_items'是物品总数。返回1表示拿该物品，0表示不拿。所有数据均为Numpy数组。",
+    "problem_path": "problems/knapsack",
+    "train_data": "train_data_knapsack.pkl",
+    "train_solution": "train_solution_knapsack.pkl",
+    "category": "组合优化类",
+    "default_config": {
+      "population_size": 8,
+      "num_generations": 10
+    }
+  },
+  "maxcut": {
+    "key": "maxcut",
+    "description": "MaxCut问题：给定一个无向带权图，需要将节点分成两组（用0和1标记），使得连接不同组的边的权重之和最大。可以通过逐个分配节点到某一侧来构建划分。",
+    "fun_name": "assign_node",
+    "fun_args": [
+      "node_id",
+      "unassigned_nodes",
+      "node_adjacency",
+      "current_partition"
+    ],
+    "fun_return": [
+      "side"
+    ],
+    "fun_notes": "'node_id'是当前需要分配的节点索引。'unassigned_nodes'是布尔数组表示尚未分配的节点。'node_adjacency'是当前节点的邻接行（当前节点到各节点的边权重，长度=节点数，无边处为0）。'current_partition'是当前部分分配(-1=未分配, 0/1=已分配侧)。返回0或1表示分配到哪一侧。所有数据均为Numpy数组。",
+    "problem_path": "problems/maxcut",
+    "train_data": "train_data_maxcut.pkl",
+    "train_solution": "train_solution_maxcut.pkl",
+    "category": "组合优化类",
+    "default_config": {
+      "population_size": 8,
+      "num_generations": 10
+    }
+  },
+  "binpacking": {
+    "key": "binpacking",
+    "description": "一维装箱问题（Bin Packing）：给定一组物品，每个物品有大小，以及无限多个容量相同的箱子，目标是用最少的箱子装下所有物品。可以通过按顺序逐个决定每个物品放入哪个已开箱子来构建解；如果所有已开箱子都放不下，则返回-1表示开一个新箱子。",
+    "fun_name": "place_item",
+    "fun_args": [
+      "item_size",
+      "remaining_capacities",
+      "item_sizes",
+      "num_items"
+    ],
+    "fun_return": [
+      "bin_index"
+    ],
+    "fun_notes": "'item_size'是当前要放置的物品大小（标量）。'remaining_capacities'是已开箱子的剩余容量数组。'item_sizes'是所有物品大小数组。'num_items'是物品总数。返回要放入的箱子索引（0-based），若所有已开箱子都放不下则返回-1表示开新箱。所有数据均为Numpy数组。",
+    "problem_path": "problems/binpacking",
+    "train_data": "train_data_binpacking.pkl",
+    "train_solution": "train_solution_binpacking.pkl",
+    "category": "组合优化类",
+    "default_config": {
+      "population_size": 8,
+      "num_generations": 10
+    }
+  },
+  "graphcoloring": {
+    "key": "graphcoloring",
+    "description": "图着色问题（Graph Coloring）：给定一个无向图，需要为每个节点分配一种颜色，使得任意相邻（有边相连）的两个节点颜色不同，目标是最小化使用的颜色总数。可以通过按顺序逐个为节点选择颜色来构建解；如果已有颜色都与邻居冲突，可以启用一种新颜色。",
+    "fun_name": "choose_color",
+    "fun_args": [
+      "node_id",
+      "node_adjacency",
+      "current_colors",
+      "num_colors_used"
+    ],
+    "fun_return": [
+      "color"
+    ],
+    "fun_notes": "'node_id'是当前需要着色的节点索引。'node_adjacency'是当前节点的邻接行（0/1标记，长度=节点数，用于找邻居冲突）。'current_colors'是当前部分着色数组（-1=未着色，>=0=颜色编号）。'num_colors_used'是当前已使用的颜色种类数。返回该节点应使用的颜色编号（0到num_colors_used均可，num_colors_used表示开新颜色）。所有数据均为Numpy数组。",
+    "problem_path": "problems/graphcoloring",
+    "train_data": "train_data_graphcoloring.pkl",
+    "train_solution": "train_solution_graphcoloring.pkl",
+    "category": "组合优化类",
+    "default_config": {
+      "population_size": 8,
+      "num_generations": 10
+    }
+  },
+  "cvrp": {
+    "key": "cvrp",
+    "description": "CVRP（容量受限车辆路径问题）：给定一个仓库和多个客户节点，每辆车有容量限制，需要为所有客户配送货物，目标是最小化总行驶距离。可以通过从当前节点开始逐步选择下一个要服务的客户来构建路线。如果车辆装不下当前客户需求，返回-1表示返回仓库。",
+    "fun_name": "find_best_route",
+    "fun_args": [
+      "current_node",
+      "remaining_demands",
+      "vehicle_capacity",
+      "current_load",
+      "distances_from_current",
+      "demand_list"
+    ],
+    "fun_return": [
+      "next_node"
+    ],
+    "fun_notes": "'current_node'和'next_node'是节点ID。'remaining_demands'是布尔数组表示未服务节点。'vehicle_capacity'和'current_load'是标量。'distances_from_current'是当前节点到各节点的距离一行（长度为节点数）。'demand_list'是各节点需求量。如果无合适节点则返回-1表示返回仓库。所有数据均为Numpy数组。",
+    "problem_path": "problems/cvrp",
+    "train_data": "train_data_cvrp.pkl",
+    "train_solution": "train_solution_cvrp.pkl",
+    "category": "组合优化类",
+    "default_config": {
+      "population_size": 8,
+      "num_generations": 10
+    }
+  },
+  "jsp": {
+    "key": "jsp",
+    "description": "作业车间调度问题（Job Shop Scheduling）：给定n个作业和m台机器，每个作业由一串工序组成，各工序需按指定顺序在指定机器上加工，目标是最小化所有作业完成的最大完工时间(makespan)。可以通过每次选择一个尚未完成的作业推进其下一道工序来构建调度。",
+    "fun_name": "select_next_job",
+    "fun_args": [
+      "available_operations",
+      "job_progress",
+      "operation_times",
+      "machine_ready_times",
+      "machine_of_op"
+    ],
+    "fun_return": [
+      "next_job"
+    ],
+    "fun_notes": "'available_operations'是可推进下一工序的作业索引数组（未完成作业）。'job_progress'是每个作业已完成的工序数数组。'operation_times'是(n_jobs x n_machines)加工时间矩阵，第k列是该作业第k道工序的时间。'machine_ready_times'是每台机器的最早空闲时间。'machine_of_op'是(n_jobs x n_machines)机器顺序矩阵，第k列是该作业第k道工序使用的机器。返回要推进的作业索引。所有数据均为Numpy数组。",
+    "problem_path": "problems/jsp",
+    "train_data": "train_data_jsp.pkl",
+    "train_solution": "train_solution_jsp.pkl",
+    "category": "组合优化类",
+    "default_config": {
+      "population_size": 8,
+      "num_generations": 10
+    }
+  },
+  "kcenter": {
+    "key": "kcenter",
+    "description": "k中心问题（k-Center）：给定一组节点和它们之间的距离，需要选出k个节点作为服务中心，使得所有节点到其最近中心的距离中的最大值（最大覆盖距离）最小。可以通过从第一个中心开始，逐个选择下一个中心来构建解。",
+    "fun_name": "select_next_center",
+    "fun_args": [
+      "selected_centers",
+      "candidate_nodes",
+      "distance_matrix",
+      "k"
+    ],
+    "fun_return": [
+      "center_index"
+    ],
+    "fun_notes": "'selected_centers'是已选中心节点索引数组。'candidate_nodes'是候选节点索引数组（尚未被选为中心）。'distance_matrix'是节点间距离矩阵。'k'是需要选择的总中心数。返回下一个要选为中心节点的索引；若无法继续则返回None。所有数据均为Numpy数组。",
+    "problem_path": "problems/kcenter",
+    "train_data": "train_data_kcenter.pkl",
+    "train_solution": "train_solution_kcenter.pkl",
+    "category": "组合优化类",
+    "default_config": {
+      "population_size": 8,
+      "num_generations": 10
+    }
+  },
+  "mtsp": {
+    "key": "mtsp",
+    "description": "多旅行商问题（mTSP）：给定多个旅行商和一个仓库节点，需要为每个旅行商规划一条从仓库出发、访问若干客户节点并返回仓库的环线，所有客户节点必须被恰好一个旅行商访问一次，目标是最小化所有旅行商的总行驶距离。可以通过从当前节点开始逐步选择下一个要访问的客户来构建路线；返回-1表示当前旅行商返回仓库结束路线，换下一个旅行商。",
+    "fun_name": "select_next_node",
+    "fun_args": [
+      "current_node",
+      "unvisited_nodes",
+      "distances_from_current",
+      "remaining_salesmen"
+    ],
+    "fun_return": [
+      "next_node"
+    ],
+    "fun_notes": "'current_node'是当前所在节点ID。'unvisited_nodes'是尚未访问的客户节点ID数组。'distances_from_current'是当前节点到各节点的距离一行（长度为节点数）。'remaining_salesmen'是剩余可用的旅行商数量（含当前）。返回下一个要访问的客户节点ID；返回-1表示当前路线结束（返回仓库），换下一个旅行商。所有数据均为Numpy数组。",
+    "problem_path": "problems/mtsp",
+    "train_data": "train_data_mtsp.pkl",
+    "train_solution": "train_solution_mtsp.pkl",
+    "category": "组合优化类",
+    "default_config": {
+      "population_size": 8,
+      "num_generations": 10
+    }
+  },
+  "orienteering": {
+    "key": "orienteering",
+    "description": "定向越野问题（Orienteering）：给定一个起点/终点和一组客户节点，每个客户有访问利润，旅行者有一条总距离预算，需要规划一条从起点出发、在预算内访问若干客户并返回起点的路线，目标是在预算约束内最大化访问客户的总利润。可以通过从当前节点开始逐步选择下一个要访问的客户来构建路线；若剩余预算不足以访问任何客户并返回起点，则返回-1表示结束路线返回起点。",
+    "fun_name": "select_next_node",
+    "fun_args": [
+      "current_node",
+      "visited",
+      "remaining_profits",
+      "distances_from_current",
+      "budget_left",
+      "total_profit"
+    ],
+    "fun_return": [
+      "next_node"
+    ],
+    "fun_notes": "'current_node'是当前所在节点ID。'visited'是布尔数组表示已访问节点。'remaining_profits'是各节点利润数组。'distances_from_current'是当前节点到各节点的距离一行（长度为节点数）。'budget_left'是剩余预算（标量）。'total_profit'是当前累计利润（标量）。返回下一个要访问的客户节点ID；若无法再访问任何客户（预算不足）则返回-1表示返回起点结束。所有数据均为Numpy数组。",
+    "problem_path": "problems/orienteering",
+    "train_data": "train_data_orienteering.pkl",
+    "train_solution": "train_solution_orienteering.pkl",
+    "category": "组合优化类",
+    "default_config": {
+      "population_size": 8,
+      "num_generations": 10
+    }
+  },
+  "parmachine": {
+    "key": "parmachine",
+    "description": "并行机调度问题（P||Cmax）：给定n个独立作业和m台相同的并行机器，每个作业有加工时间，可以将每个作业分配给任意一台机器加工（每台机器同一时间只能加工一个作业），目标是最小化所有机器的最晚完工时间(makespan)。可以通过按某个顺序逐个将作业分配给一台机器来构建解。",
+    "fun_name": "assign_job",
+    "fun_args": [
+      "job_id",
+      "machine_loads",
+      "processing_times",
+      "num_machines"
+    ],
+    "fun_return": [
+      "machine_index"
+    ],
+    "fun_notes": "'job_id'是当前要分配的作业索引。'machine_loads'是每台机器当前累计负载数组。'processing_times'是所有作业的加工时间数组。'num_machines'是机器数量。返回该作业要分配到的机器索引（0-based）。所有数据均为Numpy数组。",
+    "problem_path": "problems/parmachine",
+    "train_data": "train_data_parmachine.pkl",
+    "train_solution": "train_solution_parmachine.pkl",
+    "category": "组合优化类",
+    "default_config": {
+      "population_size": 8,
+      "num_generations": 10
+    }
+  },
+  "partition": {
+    "key": "partition",
+    "description": "数划分问题（Number Partitioning）：给定一组数字，需要将它们分成两组（组A和组B），使得两组数字之和的差尽可能小（理想为0）。可以通过按顺序逐个决定每个数字放入哪一组来构建解。",
+    "fun_name": "assign_number",
+    "fun_args": [
+      "number_id",
+      "sum_a",
+      "sum_b",
+      "numbers"
+    ],
+    "fun_return": [
+      "group"
+    ],
+    "fun_notes": "'number_id'是当前要分配的数字索引。'sum_a'和'sum_b'是两组当前的累计和（标量）。'numbers'是所有数字数组。返回0表示放入组A，返回1表示放入组B。所有数据均为Numpy数组。",
+    "problem_path": "problems/partition",
+    "train_data": "train_data_partition.pkl",
+    "train_solution": "train_solution_partition.pkl",
+    "category": "组合优化类",
+    "default_config": {
+      "population_size": 8,
+      "num_generations": 10
+    }
+  },
+  "pfsp": {
+    "key": "pfsp",
+    "description": "PFSP（置换流水车间调度问题）：给定n个作业和m台机器，每个作业需按相同顺序在所有机器上加工，目标是最小化最大完工时间(makespan)。可以通过逐个选择未调度的作业来构建调度序列。",
+    "fun_name": "select_next_job",
+    "fun_args": [
+      "unscheduled_jobs",
+      "current_schedule",
+      "processing_times",
+      "num_machines"
+    ],
+    "fun_return": [
+      "next_job"
+    ],
+    "fun_notes": "'unscheduled_jobs'是未调度作业的索引数组。'current_schedule'是当前已调度的作业序列列表。'processing_times'是(n_jobs x num_machines)的加工时间矩阵。'num_machines'是机器数。返回要调度的下一个作业的索引。所有数据均为Numpy数组。",
+    "problem_path": "problems/pfsp",
+    "train_data": "train_data_pfsp.pkl",
+    "train_solution": "train_solution_pfsp.pkl",
+    "category": "组合优化类",
+    "default_config": {
+      "population_size": 8,
+      "num_generations": 10
+    }
+  },
+  "power_trading": {
+    "key": "power_trading",
+    "description": "电力交易策略问题：在电力现货市场中，交易主体需在年度、月度、月内、日前等多个市场阶段逐步决定目标持仓电量（MWh），在满足负荷需求的同时最小化净购电成本。每个决策阶段会给出当前阶段的负荷与价格预测分位数带（p10/p50/p90），以及后续阶段更精确的预测中枢；启发式需据此返回目标持仓电量 target_mwh。目标（objective）：相对被动分层基线的净购电成本节省率打分（score 越大越优，ascend=False）。",
+    "fun_name": "propose_target_mwh",
+    "fun_args": [
+      "stage_index",
+      "load_p10",
+      "load_p50",
+      "load_p90",
+      "price_p10",
+      "price_p50",
+      "price_p90",
+      "later_load_p50",
+      "later_price_p50",
+      "position_before_mwh",
+      "transaction_fee"
+    ],
+    "fun_return": [
+      "target_mwh"
+    ],
+    "fun_notes": "'stage_index'是市场阶段索引(0=年度/1=月度/2=月内/3=日前)。'load_p10/load_p50/load_p90'是当前阶段负荷预测分位数带，'price_p10/price_p50/price_p90'是当前阶段价格预测分位数带。'later_load_p50/later_price_p50'是后续阶段更精确的负荷/价格预测中枢。'position_before_mwh'是当前持仓电量，'transaction_fee'是单位交易手续费。返回目标持仓电量 target_mwh（标量，会被截断到 [0, load_p90]）。所有数值均为标量 float。",
+    "problem_path": "problems/power_trading",
+    "train_data": "train_data_power_trading.pkl",
+    "train_solution": "train_solution_power_trading.pkl",
+    "category": "预测算法类",
+    "default_config": {
+      "population_size": 8,
+      "num_generations": 10
+    }
+  },
+  "qap": {
+    "key": "qap",
+    "description": "二次分配问题（QAP）：给定n个设施和n个位置，设施之间有物流流量矩阵，位置之间有距离矩阵，需要将每个设施分配到唯一一个位置，使所有设施对的流量×距离之和最小。可以通过按某个顺序逐个为设施选择位置来构建解（考虑与已分配设施的交互成本）。",
+    "fun_name": "assign_facility",
+    "fun_args": [
+      "facility_id",
+      "available_positions",
+      "flow_matrix",
+      "distance_matrix",
+      "current_assignment"
+    ],
+    "fun_return": [
+      "position_index"
+    ],
+    "fun_notes": "'facility_id'是当前要分配的设施索引。'available_positions'是尚未占用的位置索引数组。'flow_matrix'是设施间流量矩阵。'distance_matrix'是位置间距离矩阵。'current_assignment'是当前部分分配数组（-1=未分配，>=0=设施占用的位置）。返回该设施应分配的位置索引。所有数据均为Numpy数组。",
+    "problem_path": "problems/qap",
+    "train_data": "train_data_qap.pkl",
+    "train_solution": "train_solution_qap.pkl",
+    "category": "组合优化类",
+    "default_config": {
+      "population_size": 8,
+      "num_generations": 10
+    }
+  },
+  "setcover": {
+    "key": "setcover",
+    "description": "集合覆盖问题（Set Cover）：给定一个包含所有元素的全集和若干集合，每个集合覆盖其中一部分元素并有一个选取成本，目标是用最小的总成本选出一些集合，使得所有元素都被至少一个所选集合覆盖。可以通过逐个选择集合来构建解，直到所有元素都被覆盖。",
+    "fun_name": "select_next_set",
+    "fun_args": [
+      "uncovered_elements",
+      "set_membership",
+      "set_costs"
+    ],
+    "fun_return": [
+      "set_index"
+    ],
+    "fun_notes": "'uncovered_elements'是布尔数组，True表示该元素尚未被覆盖。'set_membership'是(n_sets x n_elements)的0/1矩阵，set_membership[s,e]=1表示集合s包含元素e。'set_costs'是每个集合的选取成本数组。返回下一个要选取的集合索引（0-based），若无法继续则返回None。所有数据均为Numpy数组。",
+    "problem_path": "problems/setcover",
+    "train_data": "train_data_setcover.pkl",
+    "train_solution": "train_solution_setcover.pkl",
+    "category": "组合优化类",
+    "default_config": {
+      "population_size": 8,
+      "num_generations": 10
+    }
+  },
+  "smtwt": {
+    "key": "smtwt",
+    "description": "单机加权延误调度问题（1||ΣwT）：给定一批作业在一台机器上加工，每个作业有加工时间、截止日期和权重，机器一次只能加工一个作业，目标是最小化所有作业的加权总延误（每个作业延误 = 权重 × max(0, 完工时间 - 截止日期)）。可以通过从当前时刻开始逐个选择下一个要加工的作业来构建调度序列。",
+    "fun_name": "select_next_job",
+    "fun_args": [
+      "unscheduled_jobs",
+      "current_time",
+      "processing_times",
+      "due_dates",
+      "weights"
+    ],
+    "fun_return": [
+      "next_job"
+    ],
+    "fun_notes": "'unscheduled_jobs'是尚未加工的作业索引数组。'current_time'是当前时刻（标量）。'processing_times'是各作业加工时间数组。'due_dates'是各作业截止日期数组。'weights'是各作业权重数组。返回下一个要加工的作业索引。所有数据均为Numpy数组。",
+    "problem_path": "problems/smtwt",
+    "train_data": "train_data_smtwt.pkl",
+    "train_solution": "train_solution_smtwt.pkl",
+    "category": "组合优化类",
+    "default_config": {
+      "population_size": 8,
+      "num_generations": 10
+    }
+  },
+  "steinertree": {
+    "key": "steinertree",
+    "description": "斯坦纳树问题（Steiner Tree）：给定一个带权无向图和一组必须连通的终端节点，需要选择一组边和中间节点（斯坦纳点），使得所有终端节点连通，目标是最小化所选边的总权重。可以通过从根终端出发，每次选择一个未连接的终端并将其连接到当前树（沿最短路径）来构建解。",
+    "fun_name": "select_next_terminal",
+    "fun_args": [
+      "current_tree",
+      "unconnected_terminals",
+      "adjacency_matrix",
+      "distances"
+    ],
+    "fun_return": [
+      "terminal_index"
+    ],
+    "fun_notes": "'current_tree'是布尔数组，True表示该节点已在当前树中。'unconnected_terminals'是尚未连接的终端节点索引数组。'adjacency_matrix'是带权邻接矩阵（0表示无边）。'distances'是(n x n)全源最短路径距离矩阵。返回下一个要连接的终端节点索引；若无法连接则返回None。所有数据均为Numpy数组。",
+    "problem_path": "problems/steinertree",
+    "train_data": "train_data_steinertree.pkl",
+    "train_solution": "train_solution_steinertree.pkl",
+    "category": "组合优化类",
+    "default_config": {
+      "population_size": 8,
+      "num_generations": 10
+    }
+  },
+  "vertexcover": {
+    "key": "vertexcover",
+    "description": "最小顶点覆盖问题（Minimum Vertex Cover）：给定一个无向图，需要选出最少数量的节点，使得图中的每条边都至少有一个端点在所选节点集合中。可以通过逐个选择节点加入覆盖集合来构建解，直到所有边都被覆盖。",
+    "fun_name": "select_next_vertex",
+    "fun_args": [
+      "uncovered_edges",
+      "current_cover"
+    ],
+    "fun_return": [
+      "vertex_index"
+    ],
+    "fun_notes": "'uncovered_edges'是布尔矩阵，uncovered_edges[i,j]=True表示边(i,j)尚未被覆盖。'current_cover'是布尔数组表示当前已选入覆盖的节点。返回下一个要加入覆盖的节点索引（0-based），若无法继续则返回None。所有数据均为Numpy数组。",
+    "problem_path": "problems/vertexcover",
+    "train_data": "train_data_vertexcover.pkl",
+    "train_solution": "train_solution_vertexcover.pkl",
+    "category": "组合优化类",
+    "default_config": {
+      "population_size": 8,
+      "num_generations": 10
+    }
+  },
+  "vrptw": {
+    "key": "vrptw",
+    "description": "带时间窗的车辆路径问题（VRPTW）：给定一个仓库和多个客户节点，每个客户有需求量、服务时间和服务时间窗[最早开始,最晚开始]，车辆有容量限制，目标是在满足所有客户时间窗和车辆容量约束的前提下，用最少的车辆和最短的总行驶距离服务所有客户。可以通过从当前节点开始逐步选择下一个要服务的客户来构建路线；若车辆装不下或无法在时间窗内到达，则返回-1表示返回仓库。",
+    "fun_name": "select_next_customer",
+    "fun_args": [
+      "current_node",
+      "current_time",
+      "remaining_demands",
+      "vehicle_capacity",
+      "current_load",
+      "distances_from_current",
+      "demand_list",
+      "time_windows",
+      "service_times"
+    ],
+    "fun_return": [
+      "next_node"
+    ],
+    "fun_notes": "'current_node'是当前节点ID。'current_time'是当前路线已用时间。'remaining_demands'是布尔数组表示未服务节点。'vehicle_capacity'和'current_load'是标量。'distances_from_current'是当前节点到各节点的距离一行（长度为节点数）。'demand_list'是各节点需求量。'time_windows'是(n,2)数组，每行[最早开始,最晚开始]。'service_times'是各节点服务时间。返回下一个要服务的客户节点ID；若无可行客户则返回-1表示返回仓库。所有数据均为Numpy数组。",
+    "problem_path": "problems/vrptw",
+    "train_data": "train_data_vrptw.pkl",
+    "train_solution": "train_solution_vrptw.pkl",
+    "category": "组合优化类",
+    "default_config": {
+      "population_size": 8,
+      "num_generations": 10
+    }
+  },
+  "maxclique": {
+    "key": "maxclique",
+    "description": "最大团问题（Maximum Clique）：给定一个无向图，需要找出一组节点，使得这组节点中任意两个节点之间都有边相连（构成一个团），目标是在所有这样的节点组中找到规模最大的一个。可以通过从空团开始，逐个选择与当前团所有节点都相邻的候选节点加入来构建解；当没有可加入的候选节点时结束。",
+    "fun_name": "select_next_vertex",
+    "fun_args": [
+      "current_clique",
+      "candidate_vertices",
+      "adjacency_matrix"
+    ],
+    "fun_return": [
+      "vertex_index"
+    ],
+    "fun_notes": "'current_clique'是当前团中的节点索引数组（可能为空）。'candidate_vertices'是候选节点索引数组（与当前团全相邻的未选节点）。'adjacency_matrix'是无向图邻接矩阵（0/1）。返回下一个要加入团的节点索引；若无候选节点则返回None。所有数据均为Numpy数组。",
+    "problem_path": "problems/maxclique",
+    "train_data": "train_data_maxclique.pkl",
+    "train_solution": "train_solution_maxclique.pkl",
+    "category": "组合优化类",
+    "default_config": {
+      "population_size": 8,
+      "num_generations": 10
+    }
+  }
+}

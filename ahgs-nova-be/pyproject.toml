@@ -1,0 +1,35 @@
+[project]
+name = "ahgs-nova-be"
+version = "0.1.0"
+description = "Nova Backend — AHGS NOVA 自建后端(Proxy+ / Standalone 双模式),含冲榜工作流原语与对战 Arena 扩展点"
+requires-python = ">=3.11"
+readme = "README.md"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn>=0.34",
+    "websockets>=13",
+    "sqlalchemy[asyncio]>=2.0.44",
+    "aiosqlite>=0.20",
+    "pydantic>=2.12",
+    "pydantic-settings>=2.6",
+    "httpx>=0.28",
+    "pyjwt>=2.10",
+    "python-multipart>=0.0.12",
+    "numpy>=2.1",
+]
+
+[project.optional-dependencies]
+postgres = ["asyncpg>=0.31"]
+dev = ["pytest>=8.3", "pytest-asyncio>=0.25"]
+
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["app*"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+filterwarnings = ["ignore::DeprecationWarning"]

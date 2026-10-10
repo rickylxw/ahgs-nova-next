@@ -1,0 +1,44 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: nova
+      POSTGRES_PASSWORD: nova
+      POSTGRES_DB: nova
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nova"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  app:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      # 单一模式:自持数据与执行
+      NOVA_DATABASE_URL: postgresql+asyncpg://nova:nova@db:5432/nova
+      NOVA_JWT_SECRET: ${NOVA_JWT_SECRET:-please-change-me-32bytes-minimum}
+      NOVA_STORAGE_DIR: /data/storage
+      NOVA_ADMIN_USERNAME: ${NOVA_ADMIN_USERNAME:-admin}
+      NOVA_ADMIN_PASSWORD: ${NOVA_ADMIN_PASSWORD:-}
+    ports:
+      - "8000:8000"
+    volumes:
+      - storage:/data/storage
+
+  # TLS 终结示例(计划 §4.1:HTTPS 强制);证书就位后放开
+  # caddy:
+  #   image: caddy:2-alpine
+  #   ports: ["443:443"]
+  #   volumes:
+  #     - ./Caddyfile:/etc/caddy/Caddyfile:ro
+  #     - caddydata:/data
+
+volumes:
+  pgdata:
+  storage:
+  # caddydata:

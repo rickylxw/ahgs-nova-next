@@ -1,30 +1,33 @@
 # ahgs-nova-next
 
-AHGS（自动启发式算法生成系统）平台增强前端 **NOVA · Next 版**：Vue 3 + Vite + vue-router + pinia。
+AHGS（自动启发式算法生成系统）平台增强版 NOVA：**自建后端 + Next 版前端** 的 monorepo。
 
-2026-10-09 从 [AHGS_NOVA](https://github.com/rickylxw/AHGS_NOVA) 单仓库拆出为独立仓库；
-旧版（原生 JS 版 / Vue 运行时版 / SFC 版）与自建后端 `ahgs-nova-be` 仍在 AHGS_NOVA 仓库维护。
+| 目录 | 说明 |
+| --- | --- |
+| [`ahgs-nova-be/`](ahgs-nova-be/) | **自建后端**（FastAPI，standalone 模式）：本地进化引擎（LLM 变异→预筛→评测→选择）、官方接口兼容层、榜单、种子库、对战 Arena，不依赖官方平台 |
+| [`ahgs-nova-next/`](ahgs-nova-next/) | **Next 版前端**（Vue 3 + Vite + vue-router + pinia）：兼容层 8 视图全量移植 + Nova v2 原生视图（登录/种子库/数据集/预筛/对战竞技/管理端） |
 
-## 功能
+共享文档：[ARENA_GAMES.md](ARENA_GAMES.md)（对战游戏规格，前后端共同契约）·
+[BACKEND_PLAN.md](BACKEND_PLAN.md)（后端设计与里程碑）。旧版前端（原生 JS / Vue 运行时 / SFC）
+仍在 [AHGS_NOVA](https://github.com/rickylxw/AHGS_NOVA) 仓库。
 
-- 兼容层 8 视图全量移植：总览 / 榜单 / 实时提交流 / 进化工作台 / 自定义问题 / 进化曲线分析 / 双提交对比 / 个人中心
-- Nova v2 原生视图：登录 / 种子库 / 数据集 / 预筛 / **对战竞技（Arena 回放）** / 管理端
-- 单一会话模型：`/api/v2/auth/*` JWT + 401 集中刷新，兼容层与 v2 端点同令牌通吃
-- 14 个路由视图，UI 文案简体中文，深色主题与 SFC 版视觉连续
-
-## 启动
+## 快速开始
 
 ```bash
+# 后端（:8000）
+cd ahgs-nova-be
+python -m venv .venv && .venv/Scripts/pip install -e ".[dev]"
+cp .env.example .env                       # 至少改 NOVA_JWT_SECRET
+python scripts/seed_demo.py                # 管理员 + 21 题 + 示例 bot
+python serve.py --port 8000
+
+# 前端（:8926，/api 代理到 :8000）
+cd ahgs-nova-next
 npm install
-npm run dev        # 开发服务器 :8926，/api 代理到 NOVA_DEV_API（默认 http://127.0.0.1:8000）
-npm run build      # 产物输出 dist/ —— 最低验证标准
-npm run preview    # 预览生产构建
+npm run dev
 ```
 
-配套后端：`AHGS_NOVA/ahgs-nova-be`（`python serve.py --port 8000`）。开发模式经 vite 代理同源免 CORS；
-生产部署在页面 ⚙ 设置里填 API base（localStorage `next_api_base`）。
-
-架构、约定与已知坑见 [AGENTS.md](AGENTS.md)；Arena 游戏规格见 [ARENA_GAMES.md](ARENA_GAMES.md)。
+各目录的架构、约定与已知坑分别见 `ahgs-nova-be/README.md` 与 `ahgs-nova-next/AGENTS.md`。
 
 ## License
 
